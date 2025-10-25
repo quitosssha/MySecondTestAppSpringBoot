@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.arkhipov.MySecondTestAppSpringBoot.model.Response;
 import ru.arkhipov.MySecondTestAppSpringBoot.util.DateTimeUtil;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Service
@@ -13,7 +14,7 @@ public class ModifySystemTimeResponseService implements ModifyResponseService {
 
     @Override
     public Response modify(Response response) {
-        response.setSystemTime(DateTimeUtil.getCustomFormat().format(new Date()));
+        response.setSystemTime(DateTimeUtil.getCustomFormat().format(Instant.now()));
         return response;
     }
 

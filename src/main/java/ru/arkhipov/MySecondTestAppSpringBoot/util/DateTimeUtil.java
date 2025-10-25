@@ -1,11 +1,13 @@
 package ru.arkhipov.MySecondTestAppSpringBoot.util;
 
-import java.text.SimpleDateFormat;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 public class DateTimeUtil {
 
-    public static SimpleDateFormat getCustomFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static DateTimeFormatter getCustomFormat() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .withZone(ZoneOffset.UTC);
     }
 
 }

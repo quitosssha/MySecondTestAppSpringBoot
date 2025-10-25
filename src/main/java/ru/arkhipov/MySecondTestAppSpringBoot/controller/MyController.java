@@ -3,18 +3,25 @@ package ru.arkhipov.MySecondTestAppSpringBoot.controller;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import ru.arkhipov.MySecondTestAppSpringBoot.exception.UnsupportedCodeException;
 import ru.arkhipov.MySecondTestAppSpringBoot.exception.ValidationFailedException;
 import ru.arkhipov.MySecondTestAppSpringBoot.model.*;
+import ru.arkhipov.MySecondTestAppSpringBoot.service.ModifySourceRequestService;
+import ru.arkhipov.MySecondTestAppSpringBoot.service.ModifySystemNameRequestService;
 import ru.arkhipov.MySecondTestAppSpringBoot.service.ValidationService;
 import ru.arkhipov.MySecondTestAppSpringBoot.util.DateTimeUtil;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Slf4j
@@ -22,10 +29,18 @@ import java.util.Date;
 public class MyController {
 
     private final ValidationService validationService;
+    private final ModifySourceRequestService modifySourceRequestService;
+    private final ModifySystemNameRequestService modifySystemNameRequestService;
+
 
     @Autowired
-    public MyController(ValidationService validationService) {
+    public MyController(
+            ValidationService validationService,
+            ModifySourceRequestService modifyRequestService,
+            ModifySystemNameRequestService modifySystemNameRequestService) {
         this.validationService = validationService;
+        this.modifySourceRequestService = modifyRequestService;
+        this.modifySystemNameRequestService = modifySystemNameRequestService;
     }
 
 
@@ -34,13 +49,22 @@ public class MyController {
                                              BindingResult bindingResult){
 
         log.info("Request: {}", request.toString());
+        request.setSystemTime(DateTimeUtil.getCustomFormat().format(Instant.now()));
+        modifySystemNameRequestService.modify(request);
+        modifySourceRequestService.modify(request);
+        log.info("Request: {}", request.toString());
+
+        new RestTemplate().exchange("http://localhost:8084/feedback",
+                HttpMethod.POST,
+                new HttpEntity<>(request),
+                new ParameterizedTypeReference<>() { });
 
         var uid = request.getUid();
 
         var response = Response.builder()
                 .uid(uid)
                 .operationUid(request.getOperationUid())
-                .systemTime(DateTimeUtil.getCustomFormat().format(new Date()))
+                .systemTime(DateTimeUtil.getCustomFormat().format(Instant.now()))
                 .code(Codes.SUCCESS)
                 .errorCode(ErrorCodes.EMPTY)
                 .errorMessage(ErrorMessages.EMPTY)

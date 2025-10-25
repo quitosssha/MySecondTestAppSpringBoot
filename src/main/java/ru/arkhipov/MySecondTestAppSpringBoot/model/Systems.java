@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Systems {
 
+    POSTMAN("Postman"),
+    SERVICE1("Service 1"),
     ERP("Enterprise Resource Planning"),
     CRM("Customer Relationship Management"),
     WMS("Warehouse Management System");
