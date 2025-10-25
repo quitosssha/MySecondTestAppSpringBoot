@@ -29,6 +29,15 @@ public class Request {
 
     private String source;
 
+    private Positions position;
+
+    private double salary;
+
+    private double bonus;
+
+    @Range(min = 0, max = 366)
+    private int workDays;
+
     @Range(min = 1, max = 100_000)
     private int communicationId;
 
@@ -46,6 +55,10 @@ public class Request {
                 ", systemName='" + systemName + '\'' +
                 ", systemTime='" + systemTime + '\'' +
                 ", source='" + source + '\'' +
+                ", position=" + position.toString() +
+                ", salary=" + salary +
+                ", bonus=" + bonus +
+                ", workDays=" + workDays +
                 ", communicationId=" + communicationId +
                 ", templateId=" + templateId +
                 ", productCode=" + productCode +

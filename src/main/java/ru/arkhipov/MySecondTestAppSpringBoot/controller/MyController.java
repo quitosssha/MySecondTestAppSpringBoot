@@ -22,7 +22,6 @@ import ru.arkhipov.MySecondTestAppSpringBoot.service.ValidationService;
 import ru.arkhipov.MySecondTestAppSpringBoot.util.DateTimeUtil;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Slf4j
 @RestController
@@ -74,32 +73,29 @@ public class MyController {
             validationService.isValid(bindingResult);
             ensureSupportedUid(uid);
         } catch (ValidationFailedException e) {
-            response.setCode(Codes.FAILED);
-            response.setErrorCode(ErrorCodes.VALIDATION_EXCEPTION);
-            response.setErrorMessage(ErrorMessages.VALIDATION);
+            setError(response, ErrorCodes.VALIDATION_EXCEPTION, ErrorMessages.VALIDATION);
             log.info("Response: {}", response.toString());
-
             log.error("Validation error: {}", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } catch (UnsupportedCodeException e) {
-            response.setCode(Codes.FAILED);
-            response.setErrorCode(ErrorCodes.UNSUPPORTED_EXCEPTION);
-            response.setErrorMessage(ErrorMessages.UNSUPPORTED);
+            setError(response, ErrorCodes.UNSUPPORTED_EXCEPTION, ErrorMessages.UNSUPPORTED);
             log.info("Response: {}", response.toString());
-
             log.error("Unsupported code error: {}", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.UNPROCESSABLE_ENTITY);
         } catch (Exception e){
-            response.setCode(Codes.FAILED);
-            response.setErrorCode(ErrorCodes.UNKNOWN_EXCEPTION);
-            response.setErrorMessage(ErrorMessages.UNKNOWN);
+            setError(response, ErrorCodes.UNKNOWN_EXCEPTION, ErrorMessages.UNKNOWN);
             log.info("Response: {}", response.toString());
-
             log.error("Unknown error: {}", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private void setError(Response response, ErrorCodes errorCode, ErrorMessages errorMessage){
+        response.setCode(Codes.FAILED);
+        response.setErrorCode(errorCode);
+        response.setErrorMessage(errorMessage);
     }
 
     private void ensureSupportedUid(String uid) throws UnsupportedCodeException {
